@@ -1,0 +1,42 @@
+<svg viewBox="0 0 90 120" xmlns="http://www.w3.org/2000/svg">
+  <!-- Frame 4: Arms fully raised -->
+  <g transform="translate(20, 20)">
+    <text x="25" y="-5" font-family="Arial" font-size="12" text-anchor="middle" fill="#666">Frame 4</text>
+    
+    <!-- Head (tilted back maximum) -->
+    <ellipse cx="25" cy="25" rx="18" ry="20" fill="#F4C2A1" transform="rotate(-15 25 25)"/>
+    
+    <!-- Hair (flowing upward) -->
+    <path d="M7 10 Q25 0 43 10 L43 20 Q35 15 25 15 Q15 15 7 20 Z" fill="#8B4513" transform="rotate(-15 25 25)"/>
+    
+    <!-- Eyes (maximum wide) -->
+    <ellipse cx="19" cy="22" rx="3.5" ry="4" fill="#000" transform="rotate(-15 25 25)"/>
+    <ellipse cx="31" cy="22" rx="3.5" ry="4" fill="#000" transform="rotate(-15 25 25)"/>
+    
+    <!-- Mouth (maximum open) -->
+    <ellipse cx="25" cy="30" rx="3.5" ry="6" fill="#000" transform="rotate(-15 25 25)"/>
+    
+    <!-- Earrings (swaying more) -->
+    <circle cx="5" cy="23" r="2" fill="#FFD700"/>
+    <circle cx="45" cy="23" r="2" fill="#FFD700"/>
+    
+    <!-- Body -->
+    <rect x="15" y="45" width="20" height="25" rx="3" fill="#E8E8E8"/>
+    
+    <!-- Arms (fully raised, 90+ degrees) -->
+    <ellipse cx="12" cy="48" rx="4" ry="12" fill="#F4C2A1" transform="rotate(-95 12 48)"/>
+    <ellipse cx="38" cy="48" rx="4" ry="12" fill="#F4C2A1" transform="rotate(95 38 48)"/>
+    
+    <!-- Hands -->
+    <circle cx="10" cy="36" r="3" fill="#F4C2A1"/>
+    <circle cx="40" cy="36" r="3" fill="#F4C2A1"/>
+    
+    <!-- Legs (bent and spread for balance) -->
+    <ellipse cx="18" cy="86" rx="4" ry="12" fill="#F4C2A1" transform="rotate(-15 18 86)"/>
+    <ellipse cx="32" cy="86" rx="4" ry="12" fill="#F4C2A1" transform="rotate(15 32 86)"/>
+    
+    <!-- Shoes -->
+    <ellipse cx="16" cy="98" rx="5" ry="4" fill="#333"/>
+    <ellipse cx="34" cy="98" rx="5" ry="4" fill="#333"/>
+  </g>
+</svg>

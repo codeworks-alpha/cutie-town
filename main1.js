@@ -20,7 +20,40 @@ window.addEventListener('resize', () => {
 
 // Load textures
 const textureLoader = new THREE.TextureLoader();
-const backgroundTexture = textureLoader.load('assets/img/bg1.jpg');
+
+const bgUrls = [
+    'assets/img/bg0.jpg',
+    'assets/img/bg1.jpg',
+    'assets/img/bg2.jpg',
+    'assets/img/bg3.jpg',
+    'assets/img/bg0.jpg'
+
+];
+
+const segmentWidth = 2;
+const totalWorldWidth = bgUrls.length * segmentWidth;
+const halfViewWidth = (camera.right - camera.left) / 2;
+const minCameraX = halfViewWidth;
+const maxCameraX = totalWorldWidth - halfViewWidth;
+
+
+const backgroundSegments = [];
+
+bgUrls.forEach((url, index) => {
+    const texture = textureLoader.load(url);
+    texture.wrapS = THREE.ClampToEdgeWrapping;
+    texture.wrapT = THREE.ClampToEdgeWrapping;
+
+    const material = new THREE.MeshBasicMaterial({ map: texture, depthWrite: false });
+    const geometry = new THREE.PlaneGeometry(2, 2); // adjust width/height per segment
+    const mesh = new THREE.Mesh(geometry, material);
+
+    mesh.position.set(index * 2, 0, -1); // Spread horizontally
+    scene.add(mesh);
+    backgroundSegments.push(mesh);
+});
+
+
 const spriteTextures = [
     textureLoader.load('assets/img/1.png'),
     textureLoader.load('assets/img/4.png'),
@@ -40,11 +73,7 @@ const bigObjectTextures = [
     textureLoader.load('assets/img/basket.png'),
 ];
 
-// Background
-const bgGeometry = new THREE.PlaneGeometry(2, 2);
-const bgMaterial = new THREE.MeshBasicMaterial({ map: backgroundTexture });
-const background = new THREE.Mesh(bgGeometry, bgMaterial);
-scene.add(background);
+
 
 // Sprites
 const sprites = [];
@@ -72,7 +101,7 @@ bigObjectTextures.forEach((texture, index) => {
     const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
     const sprite = new THREE.Sprite(spriteMaterial);
     sprite.scale.set(0.15, 0.3, 1);
-    sprite.position.set((index - 0.5) * 0.1, 0, 1); // Spread sprites horizontally
+    sprite.position.set((index - 0.5) * 0.2, 0, 1); // Spread sprites horizontally
     scene.add(sprite);
     sprites.push(sprite);
 });
@@ -97,13 +126,46 @@ function onMouseDown(event) {
     }
 }
 
+const edgeMargin = 100; // pixels
+const scrollSpeed = 0.02;
+
 function onMouseMove(event) {
     if (selectedSprite) {
         mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
         mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-        selectedSprite.position.set(mouse.x, mouse.y, 1);
+
+        // Move the selected sprite
+
+        const spriteHalfWidth = 0.01; // Approximate half width of sprite
+        const worldMouseX = mouse.x * (camera.right - camera.left) / 2 + camera.position.x;
+        const worldMouseY = mouse.y * (camera.top - camera.bottom) / 2 + camera.position.y;
+    
+        // Clamp the sprite’s x position within visible world
+        const minX = 0 + spriteHalfWidth;
+        const maxX = totalWorldWidth - spriteHalfWidth;
+    
+        selectedSprite.position.set(
+            Math.max(minX - 1, Math.min(maxX, worldMouseX)),
+            worldMouseY,
+            1
+        );
+
+        
+
+        // Scroll camera if near screen edge
+        if (event.clientX < edgeMargin) {
+            camera.position.x -= scrollSpeed;
+        } else if (event.clientX > window.innerWidth - edgeMargin) {
+            camera.position.x += scrollSpeed;
+        }
+
+        camera.position.x = Math.max(minCameraX - 1, Math.min(maxCameraX - 1, camera.position.x));
+
     }
+    
+    // Clamp camera within bounds
 }
+
 
 function onMouseUp() {
     selectedSprite = null;
@@ -119,7 +181,7 @@ const floorY = -0.2;
 
 function animate() {
     requestAnimationFrame(animate);
-
+    //background.material.map.offset.x = camera.position.x * 0.1;
     sprites.forEach(sprite => {
         if (sprite !== selectedSprite) {
             if (sprite.position.y > floorY) {
@@ -138,6 +200,10 @@ function animate() {
     
         // Z-index effect: sprites closer to bottom appear in front
         sprite.position.z = (-sprite.position.y > 0 ? -sprite.position.y : 1);
+    });
+
+    backgroundSegments.forEach((segment, index) => {
+        segment.position.x = index * segmentWidth;
     });
 
     renderer.render(scene, camera);
