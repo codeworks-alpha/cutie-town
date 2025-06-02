@@ -127,7 +127,7 @@ function onMouseDown(event) {
 }
 
 const edgeMargin = 100; // pixels
-const scrollSpeed = 0.02;
+const scrollSpeed = 0.1;
 
 function onMouseMove(event) {
     if (selectedSprite) {
@@ -136,7 +136,7 @@ function onMouseMove(event) {
 
         // Move the selected sprite
 
-        const spriteHalfWidth = 0.01; // Approximate half width of sprite
+        const spriteHalfWidth = 0.1; // Approximate half width of sprite
         const worldMouseX = mouse.x * (camera.right - camera.left) / 2 + camera.position.x;
         const worldMouseY = mouse.y * (camera.top - camera.bottom) / 2 + camera.position.y;
     
