@@ -166,7 +166,6 @@ function onMouseMove(event) {
     // Clamp camera within bounds
 }
 
-
 function onMouseUp() {
     selectedSprite = null;
 }
@@ -174,6 +173,57 @@ function onMouseUp() {
 document.addEventListener('mousedown', onMouseDown);
 document.addEventListener('mousemove', onMouseMove);
 document.addEventListener('mouseup', onMouseUp);
+
+console.log("Mouse events initialized.");
+
+// allow for touch events
+document.addEventListener('touchstart', (event) => {
+    if (event.touches.length > 0) {
+        mouse.x = (event.touches[0].clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(event.touches[0].clientY / window.innerHeight) * 2 + 1;
+        raycaster.setFromCamera(mouse, camera);
+        const intersects = raycaster.intersectObjects(sprites);
+        if (intersects.length > 0) {
+            selectedSprite = intersects[0].object;
+            selectedSprite.userData.velocityY = 0; // Stop falling
+        }
+    }
+});
+document.addEventListener('touchmove', (event) => {
+    if (selectedSprite && event.touches.length > 0) {
+        mouse.x = (event.touches[0].clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(event.touches[0].clientY / window.innerHeight) * 2 + 1;
+
+        // Move the selected sprite
+        const spriteHalfWidth = 0.1; // Approximate half width of sprite
+        const worldMouseX = mouse.x * (camera.right - camera.left) / 2 + camera.position.x;
+        const worldMouseY = mouse.y * (camera.top - camera.bottom) / 2 + camera.position.y;
+
+        // Clamp the sprite’s x position within visible world
+        const minX = 0 + spriteHalfWidth;
+        const maxX = totalWorldWidth - spriteHalfWidth;
+
+        selectedSprite.position.set(
+            Math.max(minX - 1, Math.min(maxX, worldMouseX)),
+            worldMouseY,
+            1
+        );
+
+        // Scroll camera if near screen edge
+        if (event.touches[0].clientX < edgeMargin) {
+            camera.position.x -= scrollSpeed;
+        } else if (event.touches[0].clientX > window.innerWidth - edgeMargin) {
+            camera.position.x += scrollSpeed;
+        }
+
+        camera.position.x = Math.max(minCameraX - 1, Math.min(maxCameraX - 1, camera.position.x));
+    }
+})
+
+document.addEventListener('touchend', () => {
+    selectedSprite = null;
+})
+
 
 // Animation loop
 const gravity = -0.009;
