@@ -11,10 +11,10 @@ document.getElementById('scene-container').appendChild(renderer.domElement);
 window.addEventListener('resize', () => {
     renderer.setSize(window.innerWidth, window.innerHeight);
     const aspect = window.innerWidth / window.innerHeight;
-    camera.left = -aspect;
-    camera.right = aspect;
-    camera.top = 1;
-    camera.bottom = -1;
+    camera.left = -aspect +0.6;
+    camera.right = aspect -0.6;
+    camera.top = 1.1;
+    camera.bottom = -1.1;
     camera.updateProjectionMatrix();
 });
 
@@ -224,10 +224,39 @@ document.addEventListener('touchend', () => {
     selectedSprite = null;
 })
 
+document.addEventListener('fullscreenchange', () => {
+    // Force a resize when fullscreen changes
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    renderer.setSize(width, height);
+
+    const aspect = width / height;
+    camera.left = -aspect;
+    camera.right = aspect;
+    camera.top = 1;
+    camera.bottom = -1;
+    camera.updateProjectionMatrix();
+});
+
+document.getElementById('fullscreen-btn').addEventListener('click', () => {
+    const container = document.getElementById('scene-container');
+  
+    if (container.requestFullscreen) {
+      container.requestFullscreen();
+    } else if (container.webkitRequestFullscreen) { // Safari
+      container.webkitRequestFullscreen();
+    } else if (container.mozRequestFullScreen) { // Firefox
+      container.mozRequestFullScreen();
+    } else if (container.msRequestFullscreen) { // IE/Edge
+      container.msRequestFullscreen();
+    }
+  });
+
 
 // Animation loop
 const gravity = -0.009;
 const floorY = -0.2;
+
 
 function animate() {
     requestAnimationFrame(animate);
