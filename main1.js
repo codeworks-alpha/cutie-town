@@ -13,8 +13,8 @@ window.addEventListener('resize', () => {
     const aspect = window.innerWidth / window.innerHeight;
     camera.left = -aspect +0.6;
     camera.right = aspect -0.6;
-    camera.top = 1.1;
-    camera.bottom = -1.1;
+    camera.top = 1.00;
+    camera.bottom = -1.00;
     camera.updateProjectionMatrix();
 });
 
@@ -127,7 +127,7 @@ function onMouseDown(event) {
 }
 
 const edgeMargin = 100; // pixels
-const scrollSpeed = 0.1;
+const scrollSpeed = 0.03;
 
 function onMouseMove(event) {
     if (selectedSprite) {
