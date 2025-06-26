@@ -39,6 +39,12 @@ const maxCameraX = totalWorldWidth - halfViewWidth;
 
 const backgroundSegments = [];
 
+const trashZone = {
+    x: -0.8,  // World coordinates (you may tweak these)
+    y: 0.8,
+    radius: 0.2  // Area of effect
+};
+
 bgUrls.forEach((url, index) => {
     const texture = textureLoader.load(url);
     texture.wrapS = THREE.ClampToEdgeWrapping;
@@ -338,6 +344,17 @@ function animate() {
     
         // Z-index effect: sprites closer to bottom appear in front
         sprite.position.z = (-sprite.position.y > 0 ? -sprite.position.y : 1);
+ // Check if selected sprite is near trash zone
+        if (sprite === selectedSprite) {
+            const dx = sprite.position.x - trashZone.x;
+            const dy = sprite.position.y - trashZone.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < trashZone.radius) {
+                scene.remove(sprite);
+                sprites.splice(index, 1);
+                selectedSprite = null; // Also unselect it
+            }
+        }
     });
 
     backgroundSegments.forEach((segment, index) => {
