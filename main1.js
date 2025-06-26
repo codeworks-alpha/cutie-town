@@ -88,15 +88,6 @@ spriteTextures.forEach((texture, index) => {
     sprites.push(sprite);
 });
 
-objectTextures.forEach((texture, index) => {
-    const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
-    const sprite = new THREE.Sprite(spriteMaterial);
-    sprite.scale.set(0.1, 0.2, 1);
-    sprite.position.set((index - 0.5) * 0.1, 0, 1); // Spread sprites horizontally
-    scene.add(sprite);
-    sprites.push(sprite);
-});
-
 bigObjectTextures.forEach((texture, index) => {
     const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
     const sprite = new THREE.Sprite(spriteMaterial);
@@ -251,6 +242,74 @@ document.getElementById('fullscreen-btn').addEventListener('click', () => {
       container.msRequestFullscreen();
     }
   });
+
+// Toggle side panel
+const gearBtn = document.getElementById('gear-btn');
+const sidePanel = document.getElementById('side-panel');
+const closeBtn = document.getElementById('close-btn');
+
+gearBtn.addEventListener('click', () => {
+    sidePanel.classList.toggle('open');
+});
+closeBtn.addEventListener('click', () => {
+    sidePanel.classList.remove('open');
+});
+
+// Handle character add buttons
+document.querySelectorAll('.add-character-btn-img').forEach(btn => {
+
+    btn.addEventListener('dragstart', (event) => {
+        event.dataTransfer.setData('texture-src', btn.dataset.src);
+    });
+
+    btn.addEventListener('click', () => {
+        const imgSrc = btn.dataset.src;
+        const texture = textureLoader.load(imgSrc);
+        const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
+        const sprite = new THREE.Sprite(spriteMaterial);
+        sprite.scale.set(0.1, 0.2, 1); // Customize if needed
+
+        // Spawn near center of view
+        const spawnX = camera.position.x;
+        sprite.position.set(spawnX, 0, 1);
+        sprite.userData.velocityY = 0;
+
+        scene.add(sprite);
+        sprites.push(sprite);
+    });
+});
+
+// Prevent default to allow drop on canvas
+renderer.domElement.addEventListener('dragover', (event) => {
+    event.preventDefault();
+});
+
+renderer.domElement.addEventListener('drop', (event) => {
+    event.preventDefault();
+    
+    const textureSrc = event.dataTransfer.getData('texture-src');
+    if (!textureSrc) return;
+
+    const texture = textureLoader.load(textureSrc);
+    const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
+    const sprite = new THREE.Sprite(spriteMaterial);
+    sprite.scale.set(0.1, 0.2, 1); // Default size
+
+    // Convert drop position to world coordinates
+    const rect = renderer.domElement.getBoundingClientRect();
+    const mouseX = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+    const mouseY = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+    const worldX = mouseX * (camera.right - camera.left) / 2 + camera.position.x;
+    const worldY = mouseY * (camera.top - camera.bottom) / 2 + camera.position.y;
+
+    sprite.position.set(worldX, worldY, 1);
+    sprite.userData.velocityY = 0;
+
+    scene.add(sprite);
+    sprites.push(sprite);
+});
+
 
 
 // Animation loop
